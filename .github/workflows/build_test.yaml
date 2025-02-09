@@ -1,0 +1,216 @@
+name: Build and test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detekt:
+    name: detekt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+      - name: Run detekt
+        run: gradle detektAll --stacktrace
+      - name: Upload results Artifact
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: detekt-report
+          path: |
+            **/build/reports/detekt/**/*
+          if-no-files-found: error
+
+  lint:
+    name: Android lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Lint check
+        run: gradle lintRelease --stacktrace
+      - name: Generate annotations from lint report
+        if: always()
+        uses: yutailang0119/action-android-lint@v4
+        with:
+          report-path: '**/build/reports/lint-results-*.xml'
+        continue-on-error: true
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: |
+            **/build/reports/lint-results-*.html
+            **/build/reports/lint-results-*.xml
+          if-no-files-found: error
+
+  yaml-lint:
+    name: yaml lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint check
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: rules/yamllint-config.yml
+
+  android:
+    name: Android Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+      - name: Test androidApp
+        run: gradle testDebugUnitTest --stacktrace
+      - name: Build androidApp
+        run: gradle :composeApp:assemble :composeApp:bundle --stacktrace
+      - name: Upload build outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-outputs
+          path: composeApp/app/build/outputs
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            **/build/reports/*
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-results
+          path: |
+            **/build/test-results/*
+
+  ios:
+    name: iOS Build & Test
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+      - name: Cache cocoapods
+        uses: actions/cache@v4
+        with:
+          path: iosApp/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Set up cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: latest
+      - name: Generate framework file
+        run: gradle :composeApp:generateDummyFramework
+      - name: Build xcworkspace
+        run: gradle podInstall
+      - name: Build iosApp
+        run: xcodebuild clean build -workspace iosApp/iosApp.xcworkspace -scheme iosApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+  desktop:
+    name: Desktop Build & Test
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+      - name: Test
+        run: ./gradlew jvmTest --stacktrace
+      - name: Build
+        run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
+      - name: Upload build outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-build-binaries-${{ runner.os }}
+          path: composeApp/build/compose/binaries
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-reports-${{ runner.os }}
+          path: |
+            **/build/reports/*
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-test-results-${{ runner.os }}
+          path: |
+            **/build/test-results/*
