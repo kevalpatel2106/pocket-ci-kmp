@@ -121,6 +121,20 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.kevalpatel2106.pocketci"
             packageVersion = "1.0.0"
+
+            val iconsRoot = project.file("desktop-icons")
+            macOS {
+                iconFile.set(iconsRoot.resolve("icon-mac.icns"))
+            }
+            windows {
+                iconFile.set(iconsRoot.resolve("icon-windows.ico"))
+                menuGroup = "Compose Examples"
+                // see https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
+                upgradeUuid = "FD3AD4D7-30DB-425C-AA27-F6ADB8819284"
+            }
+            linux {
+                iconFile.set(iconsRoot.resolve("icon-linux.png"))
+            }
         }
     }
 }
