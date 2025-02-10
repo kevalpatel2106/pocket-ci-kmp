@@ -18,6 +18,7 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         create("app") { from(files("./gradle/app.versions.toml")) }
+        create("androidx") { from(files("./gradle/androidx.versions.toml")) }
     }
     repositories {
         google {
@@ -32,4 +33,4 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":core:shared")
+include(":selector")

@@ -30,7 +30,7 @@ kotlin {
     }
 
     jvm("desktop")
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -53,16 +53,14 @@ kotlin {
 
     cocoapods {
         version = "2.0"
-        ios.deploymentTarget = "18.2"
         podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {
-        val desktopMain by getting
-        
         androidMain.dependencies {
             implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
+            implementation(androidx.activity.compose)
+            implementation(libs.bundles.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -71,13 +69,16 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(projects.core.shared)
+            implementation(androidx.lifecycle.viewmodel)
+            implementation(androidx.lifecycle.runtime.compose)
+            implementation(libs.bundles.koin)
+            implementation(projects.selector)
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+            }
         }
     }
 }
