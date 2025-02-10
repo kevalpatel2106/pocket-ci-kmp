@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
@@ -5,6 +6,14 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    config.setFrom("../rules/detekt-config.yml")
+    baseline = file("../rules/baseline/baseline.xmk")
+    buildUponDefaultConfig = true
+    autoCorrect = true
 }
 
 kotlin {
@@ -89,4 +98,12 @@ kotlin {
             }
         }
     }
+}
+
+dependencies {
+    detektPlugins(libs.bundles.detekt.rules)
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude { it.file.path.contains("build") }
 }

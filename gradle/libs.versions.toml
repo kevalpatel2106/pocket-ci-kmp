@@ -4,6 +4,7 @@ compose-multiplatform = "1.7.3"
 kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
 koin = "4.0.2"
+detekt = "1.23.7"
 
 [libraries]
 # org.jetbrains
@@ -19,6 +20,10 @@ koin-compose-viewmodel-navigation = { group = "io.insert-koin", name = "koin-com
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
+# Detekt
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-compose = { module = "com.twitter.compose.rules:detekt", version.require = "0.0.26" }
+
 [plugins]
 # com.android
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -31,6 +36,7 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [bundles]
 koin = [
@@ -42,4 +48,8 @@ koin = [
 koin-android = [
     "koin-android",
     "koin-androidx-compose"
+]
+detekt-rules = [
+    "detekt-formatting",
+    "detekt-compose"
 ]

@@ -9,4 +9,4 @@ val selectorModule = module {
     singleOf(::Greeting)
 }
 
-expect val platformModule : Module
+expect val platformModule: Module

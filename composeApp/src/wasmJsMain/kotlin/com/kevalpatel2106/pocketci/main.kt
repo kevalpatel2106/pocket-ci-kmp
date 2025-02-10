@@ -1,3 +1,5 @@
+@file:Suppress("Filename")
+
 package com.kevalpatel2106.pocketci
 
 import androidx.compose.ui.ExperimentalComposeUiApi

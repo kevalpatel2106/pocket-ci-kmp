@@ -7,6 +7,7 @@
 local.properties
 .idea/*
 !.idea/runConfigurations
+!.idea/icon.svg
 .DS_Store
 captures
 .externalNativeBuild

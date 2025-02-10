@@ -14,7 +14,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("app") { from(files("./gradle/app.versions.toml")) }
@@ -31,6 +30,15 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-include(":composeApp")
-include(":selector")
+rootDir.walk().maxDepth(2).filter {
+    val notBuildSrc = it.name != "buildSrc"
+    val notTemplateDir = !it.name.contains("template")
+    val containsBuildFile = File(it, "build.gradle").exists() || File(it, "build.gradle.kts").exists()
+    notBuildSrc && notTemplateDir && containsBuildFile
+}.forEach {
+    if (it.parentFile == rootDir) {
+        include(it.name)
+    } else {
+        include("${it.parentFile.name}:${it.name}")
+    }
+}

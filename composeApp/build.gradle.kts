@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -9,6 +10,14 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    config.setFrom("../rules/detekt-config.yml")
+    baseline = file("../rules/baseline/baseline.xmk")
+    buildUponDefaultConfig = true
+    autoCorrect = true
 }
 
 kotlin {
@@ -100,8 +109,21 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
+            versionNameSuffix = "-debug"
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+            isJniDebuggable = true
             isMinifyEnabled = false
+        }
+        getByName("release") {
+            isDebuggable = false
+            isMinifyEnabled = false
+            isJniDebuggable = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "../rules/proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -112,6 +134,7 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    detektPlugins(libs.bundles.detekt.rules)
 }
 
 compose.desktop {
@@ -138,4 +161,8 @@ compose.desktop {
             }
         }
     }
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude { it.file.path.contains("build") }
 }

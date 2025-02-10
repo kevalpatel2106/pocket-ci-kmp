@@ -1,0 +1,104 @@
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
+  InjectDispatcher:
+    active: true
+    dispatcherNames:
+      - 'IO'
+      - 'Default'
+      - 'Unconfined'
+  RedundantSuspendModifier:
+    active: true
+  SleepInsteadOfDelay:
+    active: true
+  SuspendFunWithCoroutineScopeReceiver:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true
+
+exceptions:
+  TooGenericExceptionThrown:
+    active: true
+    exceptionNames:
+      - 'Error'
+      - 'Exception'
+      - 'RuntimeException'
+      - 'Throwable'
+      - 'UndeliverableException'
+
+naming:
+  active: true
+  FunctionMaxLength:
+    active: false
+    maximumFunctionNameLength: 30
+    excludes: [ '**/test/**', '**/androidTest/**', '**/androidHostTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
+  FunctionNaming:
+    active: true
+    excludes: [ '**/test/**', '**/androidTest/**', '**/androidHostTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreAnnotated: [ 'Composable' ]   # https://detekt.dev/docs/introduction/compose/
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Za-z0-9]*'   # https://detekt.dev/docs/introduction/compose/
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+  MatchingDeclarationName:
+    active: false
+
+performance:
+  CouldBeSequence:
+    active: true
+    threshold: 3
+
+potential-bugs:
+  UnnecessaryNotNullCheck:
+    active: true
+
+style:
+  MagicNumber:
+    active: true
+    excludes: [ '**/test/**', '**/androidTest/**', '**/androidHostTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts' ]
+    ignorePropertyDeclaration: true   # https://detekt.dev/docs/introduction/compose/
+    ignoreAnnotated: [ 'Preview' ]   # Disable for compose preview
+  MaxLineLength:
+    active: false   # Handled by ktlint rule MaximumLineLength
+    maxLineLength: 120
+    excludes: [ '**/test/**', '**/androidTest/**' , '**/androidHostTest/**' ]   # Changed from default
+  SpacingBetweenPackageAndImports:
+    active: true
+  TrailingWhitespace:
+    active: true
+  WildcardImport:
+    active: true
+  UnusedPrivateMember:
+    active: true
+    allowedNames: '(_|ignored|expected|serialVersionUID)'
+    ignoreAnnotated: [ 'Preview', 'ParameterizedTest' ]   # https://detekt.dev/docs/introduction/compose/
+
+formatting:
+  autoCorrect: true
+  TrailingCommaOnCallSite:
+    active: true
+  TrailingCommaOnDeclarationSite:
+    active: true
+  MaximumLineLength:
+    active: false
+  SpacingBetweenDeclarationsWithAnnotations:
+    active: false
+  ArgumentListWrapping:
+    maxLineLength: 140
+  ParameterListWrapping:
+    maxLineLength: 140
+  MultiLineIfElse:
+    active: false
+  Filename:
+    active: false
+
+complexity:
+  TooManyFunctions:
+    active: true
+    excludes: [ '**/test/**', '**/androidTest/**','**/androidHostTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
+    ignoreAnnotated: [ 'dagger.Module' ]
+  LongParameterList:
+    ignoreAnnotated: [ 'Composable' ]   # https://detekt.dev/docs/introduction/compose/

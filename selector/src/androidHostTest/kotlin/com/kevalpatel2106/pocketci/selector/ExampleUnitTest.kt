@@ -9,8 +9,9 @@ import kotlin.test.assertEquals
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
     @Test
-    fun addition_isCorrect() {
+    fun `addition is correct`() {
         assertEquals(4, 2 + 2)
     }
 }
