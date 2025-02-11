@@ -5,6 +5,7 @@ kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
 koin = "4.0.2"
 detekt = "1.23.7"
+detekt-compose = "0.0.26"
 
 [libraries]
 # org.jetbrains
@@ -22,7 +23,7 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 
 # Detekt
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-compose = { module = "com.twitter.compose.rules:detekt", version.require = "0.0.26" }
+detekt-compose = { module = "com.twitter.compose.rules:detekt", version.ref = "detekt-compose" }
 
 [plugins]
 # com.android
