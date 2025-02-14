@@ -12,5 +12,5 @@ fun initKoin(config: KoinAppDeclaration? = null) {
 }
 
 private fun getModules() = listOf(
-    selectorModule
+    selectorModule,
 ).flatten()

@@ -70,6 +70,7 @@ kotlin {
             implementation(compose.preview)
             implementation(androidx.activity.compose)
             implementation(libs.bundles.koin.android)
+            implementation(androidx.core.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
