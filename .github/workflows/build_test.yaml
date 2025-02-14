@@ -155,7 +155,7 @@ jobs:
       - name: Build xcworkspace
         run: gradle podInstall
       - name: Build iosApp
-        run: xcodebuild clean build -workspace iosApp/iosApp.xcworkspace -scheme iosApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        run: xcodebuild build -project iosApp/iosApp.xcodeproj  -scheme iosApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
   desktop:
     name: Desktop Build & Test
