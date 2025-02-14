@@ -14,5 +14,5 @@ internal expect val platformModule: Module
 val selectorModule: List<Module>
     get() = listOf(
         internalModule,
-        platformModule
+        platformModule,
     )
