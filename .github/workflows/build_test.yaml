@@ -94,7 +94,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Test androidApp
         run: gradle testDebugUnitTest --stacktrace
       - name: Build androidApp
@@ -145,7 +145,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Set up cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
@@ -188,7 +188,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Test
         run: ./gradlew jvmTest --stacktrace
       - name: Build
