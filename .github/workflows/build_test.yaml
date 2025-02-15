@@ -162,7 +162,7 @@ jobs:
           configuration: Debug
           platform-version: ^18
           workspace: iosApp/iosApp.xcworkspace
-          code-sign-identity: '-' # Disable code signing
+          code-sign-identity: '-'   # Disable code signing
   desktop:
     name: Desktop Build & Test
     timeout-minutes: 30
