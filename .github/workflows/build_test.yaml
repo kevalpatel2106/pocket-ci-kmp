@@ -94,7 +94,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
       - name: Test androidApp
         run: gradle testDebugUnitTest --stacktrace
       - name: Build androidApp
@@ -145,7 +145,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
       - name: Set up cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
@@ -154,9 +154,15 @@ jobs:
         run: gradle :composeApp:generateDummyFramework
       - name: Build xcworkspace
         run: gradle podInstall
-      - name: Build iosApp
-        run: xcodebuild build -project iosApp/iosApp.xcodeproj  -scheme iosApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-
+      - uses: mxcl/xcodebuild@v3
+        with:
+          platform: iOS
+          action: build
+          scheme: iosApp
+          configuration: Debug
+          platform-version: ^18
+          workspace: iosApp/iosApp.xcworkspace
+          code-sign-identity: '-' # Disable code signing
   desktop:
     name: Desktop Build & Test
     timeout-minutes: 30
@@ -182,7 +188,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('*.versions.toml') }}
       - name: Test
         run: ./gradlew jvmTest --stacktrace
       - name: Build
