@@ -33,36 +33,6 @@ jobs:
             **/build/reports/detekt/**/*
           if-no-files-found: error
 
-  lint:
-    name: Android lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-cleanup: always
-      - name: Lint check
-        run: gradle lintRelease --stacktrace
-      - name: Generate annotations from lint report
-        if: always()
-        uses: yutailang0119/action-android-lint@v4
-        with:
-          report-path: '**/build/reports/lint-results-*.xml'
-        continue-on-error: true
-      - name: Upload lint report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: |
-            **/build/reports/lint-results-*.html
-            **/build/reports/lint-results-*.xml
-          if-no-files-found: error
-
   yaml-lint:
     name: yaml lint
     runs-on: ubuntu-latest
@@ -77,7 +47,6 @@ jobs:
     name: Android Build & Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [ lint ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,14 +67,23 @@ jobs:
           key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Test androidApp
         run: gradle testDebugUnitTest --stacktrace
+      - name: Lint check
+        run: gradle lintRelease --stacktrace
       - name: Build androidApp
         run: gradle :composeApp:assemble :composeApp:bundle --stacktrace
       - name: Upload build outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: android-build-outputs
-          path: composeApp/app/build/outputs
+          name: android-build-APKs
+          path: composeApp/build/outputs
+          if-no-files-found: error
+      - name: Generate annotations from lint report
+        if: always()
+        uses: yutailang0119/action-android-lint@v4
+        with:
+          report-path: '**/build/reports/lint-results-*.xml'
+        continue-on-error: true
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
