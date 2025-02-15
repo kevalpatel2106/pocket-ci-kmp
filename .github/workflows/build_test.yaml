@@ -33,36 +33,6 @@ jobs:
             **/build/reports/detekt/**/*
           if-no-files-found: error
 
-  lint:
-    name: Android lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-cleanup: always
-      - name: Lint check
-        run: gradle lintRelease --stacktrace
-      - name: Generate annotations from lint report
-        if: always()
-        uses: yutailang0119/action-android-lint@v4
-        with:
-          report-path: '**/build/reports/lint-results-*.xml'
-        continue-on-error: true
-      - name: Upload lint report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: |
-            **/build/reports/lint-results-*.html
-            **/build/reports/lint-results-*.xml
-          if-no-files-found: error
-
   yaml-lint:
     name: yaml lint
     runs-on: ubuntu-latest
@@ -94,17 +64,26 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Test androidApp
         run: gradle testDebugUnitTest --stacktrace
+      - name: Lint check
+        run: gradle lintRelease --stacktrace
       - name: Build androidApp
         run: gradle :composeApp:assemble :composeApp:bundle --stacktrace
       - name: Upload build outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: android-build-outputs
-          path: composeApp/app/build/outputs
+          name: android-build-APKs
+          path: composeApp/build/outputs
+          if-no-files-found: error
+      - name: Generate annotations from lint report
+        if: always()
+        uses: yutailang0119/action-android-lint@v4
+        with:
+          report-path: '**/build/reports/lint-results-*.xml'
+        continue-on-error: true
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -132,7 +111,7 @@ jobs:
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: 16.1   # https://stackoverflow.com/a/79395186
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -145,14 +124,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
-      - name: Cache cocoapods
-        uses: actions/cache@v4
-        with:
-          path: iosApp/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Set up cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
@@ -161,9 +133,15 @@ jobs:
         run: gradle :composeApp:generateDummyFramework
       - name: Build xcworkspace
         run: gradle podInstall
-      - name: Build iosApp
-        run: xcodebuild clean build -workspace iosApp/iosApp.xcworkspace -scheme iosApp CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-
+      - uses: mxcl/xcodebuild@v3
+        with:
+          platform: iOS
+          action: build
+          scheme: iosApp
+          configuration: Debug
+          platform-version: ^18
+          workspace: iosApp/iosApp.xcworkspace
+          code-sign-identity: '-'   # Disable code signing
   desktop:
     name: Desktop Build & Test
     timeout-minutes: 30
@@ -189,7 +167,7 @@ jobs:
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
       - name: Test
         run: ./gradlew jvmTest --stacktrace
       - name: Build
