@@ -1,10 +1,10 @@
 package com.kevalpatel2106.pocketci.core.test
 
-inline fun <reified T : Throwable> assertThrows(block: () -> Unit) {
+inline fun <reified T : Throwable> assertThrows(block: () -> Unit): Boolean {
     try {
         block()
+        return false
     } catch (e: Throwable) {
-        if (e is T) throw AssertionError("Exception of type ${T::class.simpleName} is thrown.")
-        else throw e
+        return e is T
     }
 }

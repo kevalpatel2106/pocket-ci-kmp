@@ -3,7 +3,7 @@ package com.kevalpatel2106.pocketci.entity
 data class Token internal constructor(private val value: String) {
 
     init {
-        if (value.isNotBlank()) throw AssertionError("Token cannot be blank value!")
+        if (value.isBlank()) throw AssertionError("Token cannot be blank value!")
     }
 
     fun getValue() = value

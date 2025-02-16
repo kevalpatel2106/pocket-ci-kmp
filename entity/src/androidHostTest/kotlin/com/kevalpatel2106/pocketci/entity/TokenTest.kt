@@ -27,10 +27,7 @@ internal class TokenTest {
     }
 
     @Test
-    fun `given nullable value when converted to token then check token`(
-        value: String?,
-        expectedToken: Token?,
-    ) {
+    fun `given nullable value when converted to token then check token`() {
         listOf(
             Pair("token", Token("token")),
             Pair("123", Token("123")),
