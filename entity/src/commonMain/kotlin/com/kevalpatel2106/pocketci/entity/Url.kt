@@ -1,6 +1,5 @@
 package com.kevalpatel2106.pocketci.entity
 
-
 data class Url(val value: String) {
     // TODO: Add validation for URL
 
