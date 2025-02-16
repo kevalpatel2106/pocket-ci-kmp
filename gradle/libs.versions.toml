@@ -6,6 +6,9 @@ kotlinx-coroutines = "1.10.1"
 koin = "4.0.2"
 detekt = "1.23.7"
 detekt-compose = "0.0.26"
+runner = "1.6.2"
+core = "1.6.1"
+junit = "1.2.1"
 
 [libraries]
 # org.jetbrains
@@ -24,6 +27,12 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 # Detekt
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose = { module = "com.twitter.compose.rules:detekt", version.ref = "detekt-compose" }
+
+kfixture = { module = "com.flextrade.jfixture:kfixture", version.require = "0.2.0" }
+turbine = { module = "app.cash.turbine:turbine", version.require = "1.2.0" }
+runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+core = { group = "androidx.test", name = "core", version.ref = "core" }
+junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 
 [plugins]
 # com.android
@@ -53,4 +62,9 @@ koin-android = [
 detekt-rules = [
     "detekt-formatting",
     "detekt-compose"
+]
+common-test = [
+    "kfixture",
+    "turbine",
+    "kotlin-test"
 ]
