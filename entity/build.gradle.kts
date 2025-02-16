@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.detekt)
 }
 
@@ -19,17 +18,11 @@ detekt {
 kotlin {
     @Suppress("UnstableApiUsage")
     androidLibrary {
-        namespace = "com.kevalpatel2106.pocketci.selector"
+        namespace = "com.kevalpatel2106.pocketci.entity"
         minSdk = app.versions.android.minSdk.get().toInt()
         compileSdk = app.versions.android.compileSdk.get().toInt()
 
         withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
     iosX64()
@@ -54,16 +47,10 @@ kotlin {
         }
     }
 
-    cocoapods {
-        version = "2.0"
-        podfile = project.file("../iosApp/Podfile")
-    }
-
     sourceSets {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.bundles.koin)
                 // Add KMP dependencies here
             }
         }
@@ -72,30 +59,6 @@ kotlin {
             dependencies {
                 implementation(libs.bundles.common.test)
                 implementation(projects.coreTest)
-            }
-        }
-
-        androidMain {
-            dependencies {
-                // Add Android-specific dependencies here.
-            }
-        }
-
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(androidx.bundles.android.test)
-            }
-        }
-
-        iosMain {
-            dependencies {
-                // Add iOS-specific dependencies here.
-            }
-        }
-
-        jvmMain {
-            dependencies {
-                // Add Desktop-specific dependencies here.
             }
         }
     }

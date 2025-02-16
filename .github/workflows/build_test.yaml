@@ -13,18 +13,29 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CI: true
+  JAVA_VERSION: 17
+
 jobs:
-  detekt:
-    name: detekt
+  checks:
+    name: Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-disabled: true
-      - name: Run detekt
+      - name: Check Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+      - name: Check detekt
         run: gradle detektAll --stacktrace
-      - name: Upload results Artifact
+      - name: Upload detekt report
         uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -32,21 +43,98 @@ jobs:
           path: |
             **/build/reports/detekt/**/*
           if-no-files-found: error
-
-  yaml-lint:
-    name: yaml lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Lint check
+      - name: Check lint
+        run: ./gradlew lintRelease --stacktrace
+      - name: Generate annotations from lint report
+        if: always()
+        uses: yutailang0119/action-android-lint@v4
+        with:
+          report-path: '**/build/reports/lint-results-*.xml'
+        continue-on-error: true
+      - name: YAML check
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: rules/yamllint-config.yml
 
-  android:
-    name: Android Build & Test
+  unit-tests:
+    name: Unit Tests (Common + Android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Test unit tests
+        run: gradle testAndroidHostTest --stacktrace
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: common-unit-test-results
+          path: |
+            **/build/reports/tests/*
+
+  android-instrumentation-tests:
+    name: Android instrumentation tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:+UseParallelGC
+    strategy:
+      fail-fast: true
+      matrix:
+        target: [ google_apis ]
+        arch: [ x86_64 ]
+        api-level: [ 31 ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          avd-name: test-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          disable-animations: true
+          disable-spellchecker: true
+          ram-size: 4096M
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew connectedAndroidTest
+      - name: Upload test results Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-instrumentation-report-avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
+          path: |
+            build/screenshots/**/*
+            build/androidTest-results/*
+            **/build/reports/androidTest/**/*
+            build/reports/*
+          if-no-files-found: warn
+
+  android-build:
+    name: Android Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [ checks, unit-tests ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,17 +147,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
-      - name: Cache KMP tooling
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
-      - name: Test androidApp
-        run: gradle testDebugUnitTest --stacktrace
-      - name: Lint check
-        run: gradle lintRelease --stacktrace
-      - name: Build androidApp
+      - name: Build Android App
         run: gradle :composeApp:assemble :composeApp:bundle --stacktrace
       - name: Upload build outputs
         if: always()
@@ -78,47 +156,25 @@ jobs:
           name: android-build-APKs
           path: composeApp/build/outputs
           if-no-files-found: error
-      - name: Generate annotations from lint report
-        if: always()
-        uses: yutailang0119/action-android-lint@v4
-        with:
-          report-path: '**/build/reports/lint-results-*.xml'
-        continue-on-error: true
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-reports
-          path: |
-            **/build/reports/*
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-test-results
-          path: |
-            **/build/test-results/*
 
-  ios:
-    name: iOS Build & Test
+  ios-build:
+    name: iOS Build
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    needs: [ checks ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          fetch-depth: 0
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 16.1   # https://stackoverflow.com/a/79395186
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-cleanup: always
       - name: Cache KMP tooling
         uses: actions/cache@v4
         with:
@@ -142,23 +198,45 @@ jobs:
           platform-version: ^18
           workspace: iosApp/iosApp.xcworkspace
           code-sign-identity: '-'   # Disable code signing
-  desktop:
-    name: Desktop Build & Test
-    timeout-minutes: 30
+
+  desktop-test:
+    name: Desktop test
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-cleanup: always
+      - name: Unit test [Desktop Specific]
+        run: ./gradlew jvmTest --stacktrace
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-unit-test-results
+          path: |
+            **/build/test-results/*
+
+  desktop-build:
+    name: Desktop build
+    timeout-minutes: 20
+    needs: [ checks, desktop-test ]
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 21
+          java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -168,9 +246,7 @@ jobs:
           path: |
             ~/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('**/gradle/*.versions.toml') }}
-      - name: Test
-        run: ./gradlew jvmTest --stacktrace
-      - name: Build
+      - name: Build Desktop App
         run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
       - name: Upload build outputs
         if: always()
@@ -178,17 +254,3 @@ jobs:
         with:
           name: desktop-build-binaries-${{ runner.os }}
           path: composeApp/build/compose/binaries
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: desktop-reports-${{ runner.os }}
-          path: |
-            **/build/reports/*
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: desktop-test-results-${{ runner.os }}
-          path: |
-            **/build/test-results/*

@@ -75,6 +75,8 @@ style:
     active: true
     allowedNames: '(_|ignored|expected|serialVersionUID)'
     ignoreAnnotated: [ 'Preview', 'ParameterizedTest' ]   # https://detekt.dev/docs/introduction/compose/
+  ForbiddenComment:
+    active: false
 
 formatting:
   autoCorrect: true

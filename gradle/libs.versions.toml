@@ -25,6 +25,9 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose = { module = "com.twitter.compose.rules:detekt", version.ref = "detekt-compose" }
 
+kfixture = { module = "com.flextrade.jfixture:kfixture", version.require = "0.2.0" }
+turbine = { module = "app.cash.turbine:turbine", version.require = "1.2.0" }
+
 [plugins]
 # com.android
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -53,4 +56,9 @@ koin-android = [
 detekt-rules = [
     "detekt-formatting",
     "detekt-compose"
+]
+common-test = [
+    "kfixture",
+    "turbine",
+    "kotlin-test"
 ]

@@ -82,6 +82,7 @@ kotlin {
             implementation(androidx.lifecycle.viewmodel)
             implementation(androidx.lifecycle.runtime.compose)
             implementation(libs.bundles.koin)
+            implementation(projects.entity)
             implementation(projects.selector)
         }
         val desktopMain by getting {
