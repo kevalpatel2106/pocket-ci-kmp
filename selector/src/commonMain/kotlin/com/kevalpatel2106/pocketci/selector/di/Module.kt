@@ -9,10 +9,5 @@ internal val internalModule = module {
     singleOf(::Greeting)
 }
 
-internal expect val platformModule: Module
-
 val selectorModule: List<Module>
-    get() = listOf(
-        internalModule,
-        platformModule,
-    )
+    get() = listOf(internalModule)

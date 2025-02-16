@@ -18,7 +18,7 @@ detekt {
 kotlin {
     @Suppress("UnstableApiUsage")
     androidLibrary {
-        namespace = "com.kevalpatel2106.pocketci.selector"
+        namespace = "com.kevalpatel2106.pocketci.connector.bitrise"
         minSdk = app.versions.android.minSdk.get().toInt()
         compileSdk = app.versions.android.compileSdk.get().toInt()
 
@@ -52,6 +52,8 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.bundles.koin)
+                implementation(projects.entity)
+                implementation(projects.connectorPublic)
                 // Add KMP dependencies here
             }
         }
