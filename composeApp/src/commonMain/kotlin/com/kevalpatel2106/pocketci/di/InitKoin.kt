@@ -1,5 +1,6 @@
 package com.kevalpatel2106.pocketci.di
 
+import com.kevalpatel2106.pocketci.connector.bitrise.di.bitriseModule
 import com.kevalpatel2106.pocketci.selector.di.selectorModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
@@ -13,4 +14,6 @@ fun initKoin(config: KoinAppDeclaration? = null) {
 
 private fun getModules() = listOf(
     selectorModule,
-).flatten()
+).flatten() + listOf(
+    bitriseModule,
+)

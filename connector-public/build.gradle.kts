@@ -18,12 +18,9 @@ detekt {
 kotlin {
     @Suppress("UnstableApiUsage")
     androidLibrary {
-        namespace = "com.kevalpatel2106.pocketci.selector"
+        namespace = "com.kevalpatel2106.pocketci.connector.public"
         minSdk = app.versions.android.minSdk.get().toInt()
         compileSdk = app.versions.android.compileSdk.get().toInt()
-
-        withHostTestBuilder {
-        }
     }
     iosX64()
     iosArm64()
@@ -50,16 +47,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.bundles.koin)
+                implementation(projects.entity)
                 // Add KMP dependencies here
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation(libs.bundles.common.test)
-                implementation(projects.coreTest)
             }
         }
     }
