@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "ignorePreset": [
+  "ignorePresets": [
     "workarounds:javaLTSVersions"
   ],
   "packageRules": [
