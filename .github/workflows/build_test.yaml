@@ -15,7 +15,6 @@ concurrency:
 
 env:
   CI: true
-  JAVA_VERSION: 17
 
 jobs:
   checks:
@@ -27,7 +26,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-disabled: true
@@ -65,7 +64,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -96,7 +95,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -143,7 +142,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 21
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -167,7 +166,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -208,7 +207,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -236,7 +235,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
