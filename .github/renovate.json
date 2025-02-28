@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  "ignorePresets": [
+    "workarounds:javaLTSVersions"
+  ],
   "packageRules": [
     {
       "description": "Automatically merge minor and patch-level updates",
@@ -46,6 +49,20 @@
         "gradle"
       ],
       "platformAutomerge": false
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "\\.java-version$"
+      ],
+      "matchStrings": [
+        "(?<currentValue>.*)\\n"
+      ],
+      "datasourceTemplate": "java-version",
+      "depNameTemplate": "java",
+      "extractVersionTemplate": "^(?<version>\\d+)"
     }
   ],
   "ruby-version": {

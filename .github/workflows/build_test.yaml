@@ -15,7 +15,6 @@ concurrency:
 
 env:
   CI: true
-  JAVA_VERSION: 17
 
 jobs:
   checks:
@@ -27,12 +26,14 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-disabled: true
       - name: Check Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
+      - name: Check renovate configs
+        uses: suzuki-shunsuke/github-action-renovate-config-validator@v1.1.1
       - name: Check detekt
         run: gradle detektAll --stacktrace
       - name: Upload detekt report
@@ -65,7 +66,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -96,7 +97,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -143,7 +144,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 21
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -167,7 +168,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -208,7 +209,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
@@ -236,7 +237,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: .java-version
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-cleanup: always
