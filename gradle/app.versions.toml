@@ -2,3 +2,4 @@
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
+jdk = "21"

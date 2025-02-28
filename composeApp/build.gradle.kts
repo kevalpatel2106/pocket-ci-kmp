@@ -23,7 +23,7 @@ detekt {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.fromTarget(getJDKVersion()))
         }
     }
 
@@ -129,8 +129,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.valueOf("VERSION_${getJDKVersion()}")
+        targetCompatibility = JavaVersion.valueOf("VERSION_${getJDKVersion()}")
     }
 }
 
@@ -168,3 +168,5 @@ compose.desktop {
 tasks.withType<Detekt>().configureEach {
     exclude { it.file.path.contains("build") }
 }
+
+private fun getJDKVersion() = File(".java-version").readText().trim()
