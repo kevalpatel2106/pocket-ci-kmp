@@ -72,6 +72,9 @@ kotlin {
             implementation(libs.bundles.koin.android)
             implementation(androidx.core.splashscreen)
         }
+        androidInstrumentedTest.dependencies {
+            implementation(androidx.bundles.android.test)
+        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -82,8 +85,13 @@ kotlin {
             implementation(androidx.lifecycle.viewmodel)
             implementation(androidx.lifecycle.runtime.compose)
             implementation(libs.bundles.koin)
+
+            // Projects
             implementation(projects.entity)
             implementation(projects.selector)
+            implementation(projects.connectorPublic)
+            implementation(projects.connectorBitrise)
+            implementation(projects.connectorGithub)
         }
         val desktopMain by getting {
             dependencies {
@@ -104,6 +112,7 @@ android {
         targetSdk = app.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {

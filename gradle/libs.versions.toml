@@ -9,9 +9,10 @@ detekt-compose = "0.0.26"
 
 [libraries]
 # org.jetbrains
-kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 # io.insert-koin
 koin = { group = "io.insert-koin", name = "koin-core", version = "koin" }
@@ -60,5 +61,6 @@ detekt-rules = [
 common-test = [
     "kfixture",
     "turbine",
-    "kotlin-test"
+    "kotlin-test",
+    "kotlinx-coroutines-test"
 ]
