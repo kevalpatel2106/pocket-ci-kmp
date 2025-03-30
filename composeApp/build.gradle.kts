@@ -82,12 +82,14 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.navigation.compose)
             implementation(androidx.lifecycle.viewmodel)
             implementation(androidx.lifecycle.runtime.compose)
             implementation(libs.bundles.koin)
 
             // Projects
             implementation(projects.entity)
+            implementation(projects.coreNavigation)
             implementation(projects.selector)
             implementation(projects.connectorPublic)
             implementation(projects.connectorBitrise)

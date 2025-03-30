@@ -19,14 +19,10 @@ detekt {
 }
 
 kotlin {
-    @Suppress("UnstableApiUsage")
     androidLibrary {
-        namespace = "com.kevalpatel2106.pocketci.selector"
+        namespace = "com.kevalpatel2106.pocketci.core.navigation"
         minSdk = app.versions.android.minSdk.get().toInt()
         compileSdk = app.versions.android.compileSdk.get().toInt()
-
-        withHostTestBuilder {
-        }
     }
     iosX64()
     iosArm64()
@@ -58,24 +54,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.bundles.koin)
                 implementation(libs.navigation.compose)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
-                implementation(projects.coreNavigation)
                 // Add KMP dependencies here
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation(libs.bundles.common.test)
-                implementation(projects.coreTest)
             }
         }
     }
