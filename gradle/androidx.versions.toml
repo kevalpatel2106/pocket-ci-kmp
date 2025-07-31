@@ -3,7 +3,7 @@
 activity-compose = "1.10.1"
 lifecycle = "2.8.4"
 runner = "1.6.2"
-core = "1.6.1"
+core = "1.7.0"
 junit-ext = "1.2.1"
 core-splashscreen = "1.0.1"
 
