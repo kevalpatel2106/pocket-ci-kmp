@@ -1,7 +1,9 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -25,6 +27,8 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(getJDKVersion()))
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
 
     listOf(
@@ -76,16 +80,16 @@ kotlin {
             implementation(androidx.bundles.android.test)
         }
         commonMain.dependencies {
+            implementation(libs.bundles.common.coroutines)
+            implementation(libs.bundles.common.koin)
+            implementation(androidx.bundles.lifecycle)
+
+            // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
             implementation(libs.navigation.compose)
-            implementation(androidx.lifecycle.viewmodel)
-            implementation(androidx.lifecycle.runtime.compose)
-            implementation(libs.bundles.koin)
 
             // Projects
             implementation(projects.entity)
@@ -107,6 +111,9 @@ kotlin {
 android {
     namespace = "com.kevalpatel2106.pocketci"
     compileSdk = app.versions.android.compileSdk.get().toInt()
+
+    @Suppress("UnstableApiUsage")
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     defaultConfig {
         applicationId = "com.kevalpatel2106.pocketci"
@@ -147,6 +154,7 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    screenshotTestImplementation(androidx.ui.tooling)
     detektPlugins(libs.bundles.detekt.rules)
 }
 
@@ -180,4 +188,4 @@ tasks.withType<Detekt>().configureEach {
     exclude { it.file.path.contains("build") }
 }
 
-private fun getJDKVersion() = File(".java-version").readText().trim()
+private fun getJDKVersion() = "21"

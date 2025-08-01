@@ -15,10 +15,15 @@ runner = { module = "androidx.test:runner", version.ref = "runner" }
 core = { module = "androidx.test:core", version.ref = "core" }
 junit-ext = { module = "androidx.test.ext:junit", version.ref = "junit-ext" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 
 [bundles]
 android-test = [
   "runner",
   "core",
   "junit-ext"
+]
+lifecycle = [
+  "lifecycle-viewmodel",
+  "lifecycle-runtime-compose"
 ]

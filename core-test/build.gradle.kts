@@ -47,7 +47,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
+                implementation(libs.bundles.common.base)
                 implementation(libs.bundles.common.test)
                 // Add KMP dependencies here
             }

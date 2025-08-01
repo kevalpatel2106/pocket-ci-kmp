@@ -50,11 +50,12 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.bundles.koin)
+                implementation(libs.bundles.common.base)
+                implementation(libs.bundles.common.koin)
+
+                // Projects
                 implementation(projects.entity)
                 implementation(projects.connectorPublic)
-                // Add KMP dependencies here
             }
         }
 

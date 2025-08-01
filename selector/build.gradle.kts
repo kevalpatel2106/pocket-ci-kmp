@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 detekt {
@@ -56,27 +57,32 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.bundles.koin)
-                implementation(libs.navigation.compose)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
-                implementation(projects.coreNavigation)
-                // Add KMP dependencies here
-            }
+        commonMain.dependencies {
+            implementation(projects.entity)
+
+            implementation(libs.bundles.common.base)
+            implementation(libs.bundles.common.koin)
+            implementation(libs.bundles.common.coroutines)
+
+            // Compose
+            implementation(libs.navigation.compose)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+
+            // Projects
+            implementation(projects.coreNavigation)
+            implementation(projects.connectorPublic)
         }
 
-        commonTest {
-            dependencies {
-                implementation(libs.bundles.common.test)
-                implementation(projects.coreTest)
-            }
+        commonTest.dependencies {
+            implementation(libs.bundles.common.test)
+
+            // Projects
+            implementation(projects.coreTest)
         }
     }
 }

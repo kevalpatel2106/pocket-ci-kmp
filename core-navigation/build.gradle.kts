@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 detekt {
@@ -54,8 +55,10 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.bundles.common.base)
+                implementation(libs.bundles.common.koin)
                 implementation(libs.navigation.compose)
-                // Add KMP dependencies here
+                implementation(projects.entity)
             }
         }
     }

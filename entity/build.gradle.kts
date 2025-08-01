@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 detekt {
@@ -50,8 +51,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(libs.bundles.common.base)
             }
         }
 

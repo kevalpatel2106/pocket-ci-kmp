@@ -48,7 +48,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.entity)
-                // Add KMP dependencies here
             }
         }
     }
