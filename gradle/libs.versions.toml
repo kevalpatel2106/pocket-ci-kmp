@@ -27,7 +27,7 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 detekt-compose = { module = "com.twitter.compose.rules:detekt", version.ref = "detekt-compose" }
 
 kfixture = { module = "com.flextrade.jfixture:kfixture", version.require = "0.2.0" }
-turbine = { module = "app.cash.turbine:turbine", version.require = "1.2.0" }
+turbine = { module = "app.cash.turbine:turbine", version.require = "1.2.1" }
 
 [plugins]
 # com.android
